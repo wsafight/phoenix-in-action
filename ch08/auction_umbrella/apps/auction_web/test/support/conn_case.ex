@@ -4,8 +4,8 @@ defmodule AuctionWeb.ConnCase do
   tests that require setting up a connection.
 
   Such tests rely on `Phoenix.ConnTest` and also
-  import other functionality to make it easier
-  to build common data structures and query the data layer.
+  import other functionality to make it easier to
+  build common data structures and query the data layer.
 
   Finally, if the test case interacts with the database,
   it cannot be async. For this reason, every test runs
@@ -17,16 +17,20 @@ defmodule AuctionWeb.ConnCase do
 
   using do
     quote do
-      # Import conveniences for testing with connections
-      use Phoenix.ConnTest
-      alias AuctionWeb.Router.Helpers, as: Routes
-
       # The default endpoint for testing
       @endpoint AuctionWeb.Endpoint
+
+      use AuctionWeb, :verified_routes
+
+      # Import conveniences for testing with connections
+      import Plug.Conn
+      import Phoenix.ConnTest
+      import AuctionWeb.ConnCase
     end
   end
 
   setup _tags do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Auction.Repo)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

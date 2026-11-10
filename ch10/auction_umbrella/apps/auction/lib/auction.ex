@@ -1,5 +1,5 @@
 defmodule Auction do
-  alias Auction.{Item, Repo, User, Password}
+  alias Auction.{Item, Password, User}
 
   @repo Auction.Repo
 
@@ -43,7 +43,7 @@ defmodule Auction do
   def insert_user(params) do
     %User{}
     |> User.changeset_with_password(params)
-    |> @repo.insert
+    |> @repo.insert()
   end
 
   def get_user_by_username_and_password(username, password) do
@@ -51,7 +51,7 @@ defmodule Auction do
          true <- Password.verify_with_hash(password, user.hashed_password) do
       user
     else
-      _ -> Password.dummy_verify
+      _ -> Password.dummy_verify()
     end
   end
 end

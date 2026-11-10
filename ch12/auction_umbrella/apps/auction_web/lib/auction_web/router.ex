@@ -23,14 +23,15 @@ defmodule AuctionWeb.Router do
     post "/login", SessionController, :create
     delete "/logout", SessionController, :delete
 
-    resources "/items", ItemController, only: [
-      :index,
-      :show,
-      :new,
-      :create,
-      :edit,
-      :update
-    ] do
+    resources "/items", ItemController,
+      only: [
+        :index,
+        :show,
+        :new,
+        :create,
+        :edit,
+        :update
+      ] do
       resources "/bids", BidController, only: [:create]
     end
 

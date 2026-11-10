@@ -2,7 +2,6 @@ defmodule Blog.App.Post do
   use Ecto.Schema
   import Ecto.Changeset
 
-
   schema "posts" do
     field :body, :string
     field :title, :string

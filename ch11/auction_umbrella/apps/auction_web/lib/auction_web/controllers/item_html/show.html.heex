@@ -1,0 +1,36 @@
+<h1>{@item.title}</h1>
+
+<ul>
+  <li><strong>Description:</strong> {@item.description}</li>
+  <li><strong>Auction ends at:</strong> {@item.ends_at}</li>
+</ul>
+
+<div style="display: flex; flex-direction: row;">
+  <div style="flex: 1">
+    <h2>Current bids</h2>
+    <p :for={bid <- @item.bids}>
+      {integer_to_currency(bid.amount)} <em>from {bid.user.username}</em>
+    </p>
+  </div>
+
+  <div style="flex: 1">
+    <%= if @current_user do %>
+      <h2>Place your bid!</h2>
+
+      <.form :let={f} for={@bid} action={~p"/items/#{@item}/bids"}>
+        <%= if @bid.action do %>
+          <div class="alert alert-danger">
+            Unfortunately, there are errors in your
+            submission. Please correct them below.
+          </div>
+        <% end %>
+
+        <div class="form-group">
+          <.input field={f[:amount]} type="number" label="Bid amount" />
+        </div>
+
+        <.button type="submit" class="btn btn-primary">Submit</.button>
+      </.form>
+    <% end %>
+  </div>
+</div>

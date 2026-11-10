@@ -1,0 +1,11 @@
+<h1>Log In</h1>
+
+<.form :let={f} for={@conn} action={~p"/login"} as={:user}>
+  <.input field={f[:username]} type="text" label="Username" />
+
+  <.input field={f[:password]} type="password" label="Password" />
+
+  <div>
+    <.button type="submit">Submit</.button>
+  </div>
+</.form>

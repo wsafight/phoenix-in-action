@@ -1,0 +1,6 @@
+<ul>
+  <li :for={item <- @items}>
+    <strong><.link navigate={~p"/items/#{item}"}>{item.title}</.link></strong>
+    — {item.description}
+  </li>
+</ul>

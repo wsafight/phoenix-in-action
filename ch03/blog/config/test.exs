@@ -1,18 +1,27 @@
-use Mix.Config
+import Config
+
+# Configure your database
+#
+# The MIX_TEST_PARTITION environment variable can be used
+# to provide built-in test partitioning in CI environment.
+# Run `mix help test` for more information.
+config :blog, Blog.Repo,
+  username: "postgres",
+  password: "postgres",
+  database: "blog_test#{System.get_env("MIX_TEST_PARTITION")}",
+  hostname: "localhost",
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: System.schedulers_online() * 2
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :blog, BlogWeb.Endpoint,
-  http: [port: 4002],
+  http: [ip: {127, 0, 0, 1}, port: 4002],
+  secret_key_base: "0fBo0C5LcbpeKWhj+oO7F9TKJ/y5fzMF4NQngynq8m75KdxFomY9lGNun0R3NqML",
   server: false
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning
 
-# Configure your database
-config :blog, Blog.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "blog_test",
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+# Initialize plugs at runtime for faster test compilation
+config :phoenix, :plug_init_mode, :runtime

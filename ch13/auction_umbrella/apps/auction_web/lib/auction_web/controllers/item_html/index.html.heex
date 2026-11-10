@@ -1,0 +1,5 @@
+<ul>
+  <li :for={item <- @items}>
+    <strong><.link href={~p"/items/#{item.id}"}>{item.title}</.link></strong> — {item.description}
+  </li>
+</ul>

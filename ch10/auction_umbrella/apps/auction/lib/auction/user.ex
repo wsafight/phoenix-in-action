@@ -3,10 +3,10 @@ defmodule Auction.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :username, :string
-    field :email_address, :string
-    field :password, :string, virtual: true
-    field :hashed_password, :string
+    field(:username, :string)
+    field(:email_address, :string)
+    field(:password, :string, virtual: true)
+    field(:hashed_password, :string)
     timestamps()
   end
 
@@ -32,5 +32,6 @@ defmodule Auction.User do
     changeset
     |> put_change(:hashed_password, Auction.Password.hash(password))
   end
+
   defp hash_password(changeset), do: changeset
 end

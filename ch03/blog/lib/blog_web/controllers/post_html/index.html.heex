@@ -1,0 +1,41 @@
+<h2>Listing Posts</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Title</th>
+      <th>Body</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr :for={post <- @posts}>
+      <td nowrap>{date(post.inserted_at)}</td>
+      <td nowrap><strong>{post.title}</strong></td>
+      <td>{post.body}</td>
+
+      <td class="text-right">
+        <span>
+          <.link href={~p"/posts/#{post}"} class="btn btn-default btn-xs">Show</.link>
+        </span>
+        <span>
+          <.link href={~p"/posts/#{post}/edit"} class="btn btn-default btn-xs">Edit</.link>
+        </span>
+        <span>
+          <.link
+            href={~p"/posts/#{post}"}
+            method="delete"
+            data-confirm="Are you sure?"
+            class="btn btn-danger btn-xs"
+          >
+            Delete
+          </.link>
+        </span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<span><.link href={~p"/posts/new"}>New Post</.link></span>

@@ -1,0 +1,19 @@
+<.form :let={f} for={@item} action={@action}>
+  <div :if={@item.action} class="alert alert-danger">
+    Unfortunately, there are errors in your
+    submission. Please correct them below.
+  </div>
+
+  <.input field={f[:title]} type="text" label="Title" />
+  <.input field={f[:description]} type="textarea" label="Description" />
+
+  <div>
+    <label for="item_ends_at">Auction ends at</label>
+    {datetime_select(f, :ends_at)}
+    <.error :for={error <- f[:ends_at].errors}>{translate_error(error)}</.error>
+  </div>
+
+  <div>
+    <.button>Submit</.button>
+  </div>
+</.form>

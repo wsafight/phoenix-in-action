@@ -2,10 +2,10 @@ defmodule AuctionWeb.Gettext do
   @moduledoc """
   A module providing Internationalization with a gettext-based API.
 
-  By using [Gettext](https://hexdocs.pm/gettext),
-  your module gains a set of macros for translations, for example:
+  By using [Gettext](https://hexdocs.pm/gettext), your module
+  gains a set of macros for translations, for example:
 
-      import AuctionWeb.Gettext
+      use Gettext, backend: AuctionWeb.Gettext
 
       # Simple translation
       gettext("Here is the string to translate")
@@ -20,5 +20,5 @@ defmodule AuctionWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :auction_web
+  use Gettext.Backend, otp_app: :auction_web
 end

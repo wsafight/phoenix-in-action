@@ -5,6 +5,7 @@ defmodule AuctionWeb.Router do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
+    plug :put_root_layout, html: {AuctionWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug AuctionWeb.Authenticator
@@ -23,14 +24,15 @@ defmodule AuctionWeb.Router do
     post "/login", SessionController, :create
     delete "/logout", SessionController, :delete
 
-    resources "/items", ItemController, only: [
-      :index,
-      :show,
-      :new,
-      :create,
-      :edit,
-      :update
-    ] do
+    resources "/items", ItemController,
+      only: [
+        :index,
+        :show,
+        :new,
+        :create,
+        :edit,
+        :update
+      ] do
       resources "/bids", BidController, only: [:create]
     end
 

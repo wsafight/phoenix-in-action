@@ -1,0 +1,18 @@
+<h1>User Registration</h1>
+
+<.form :let={f} for={@user} action={~p"/users"}>
+  <%= if @user.action do %>
+    <div class="alert alert-danger">
+      Unfortunately, there are errors in your submission. Please correct them below.
+    </div>
+  <% end %>
+
+  <.input field={f[:username]} type="text" label="Username" />
+  <.input field={f[:email_address]} type="text" label="Email address" />
+  <.input field={f[:password]} type="password" label="Password" />
+  <.input field={f[:password_confirmation]} type="password" label="Password confirmation" />
+
+  <div>
+    <.button type="submit">Submit</.button>
+  </div>
+</.form>

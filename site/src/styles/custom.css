@@ -1,0 +1,12 @@
+/* 微调 Starlight 默认主题，保持简洁 */
+:root {
+  --sl-color-accent-low: #2a1f3d;
+  --sl-color-accent: #7c5cd6;
+  --sl-color-accent-high: #d9ceff;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #e9e2fb;
+  --sl-color-accent: #6844c4;
+  --sl-color-accent-high: #241740;
+}

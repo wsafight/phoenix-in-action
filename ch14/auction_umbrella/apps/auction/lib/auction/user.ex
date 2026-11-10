@@ -33,5 +33,6 @@ defmodule Auction.User do
     changeset
     |> put_change(:hashed_password, Auction.Password.hash(password))
   end
+
   defp hash_password(changeset), do: changeset
 end

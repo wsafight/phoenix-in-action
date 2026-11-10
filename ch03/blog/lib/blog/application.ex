@@ -5,15 +5,17 @@ defmodule Blog.Application do
 
   use Application
 
+  @impl true
   def start(_type, _args) do
-    # List all child processes to be supervised
     children = [
-      # Start the Ecto repository
+      BlogWeb.Telemetry,
       Blog.Repo,
-      # Start the endpoint when the application starts
+      {DNSCluster, query: Application.get_env(:blog, :dns_cluster_query) || :ignore},
+      {Phoenix.PubSub, name: Blog.PubSub},
+      # Start the Endpoint (http/https)
       BlogWeb.Endpoint
-      # Starts a worker by calling: Blog.Worker.start_link(arg)
-      # {Blog.Worker, arg},
+      # Start a worker by calling: Blog.Worker.start_link(arg)
+      # {Blog.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -24,6 +26,7 @@ defmodule Blog.Application do
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
+  @impl true
   def config_change(changed, _new, removed) do
     BlogWeb.Endpoint.config_change(changed, removed)
     :ok

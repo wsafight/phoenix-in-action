@@ -1,0 +1,19 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <div :if={@changeset.action} class="alert alert-danger">
+    Unfortunately, there are errors in your
+    submission. Please correct them below.
+  </div>
+
+  <.input field={f[:title]} type="text" label="Title" />
+  <.input field={f[:description]} type="textarea" label="Description" />
+
+  <div class="form-group">
+    <.label for={f[:ends_at].id}>Auction ends at</.label>
+    {datetime_select(f, :ends_at)}
+    <.error :for={msg <- Enum.map(f[:ends_at].errors, &translate_error/1)}>{msg}</.error>
+  </div>
+
+  <:actions>
+    <.button>Submit</.button>
+  </:actions>
+</.simple_form>

@@ -2,7 +2,7 @@ defmodule AuctionTest do
   use ExUnit.Case
   doctest Auction
 
-  test "greets the world" do
-    assert Auction.hello() == :world
+  test "lists items from the fake repo" do
+    assert [%Auction.Item{} | _] = Auction.list_items()
   end
 end

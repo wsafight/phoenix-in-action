@@ -1,5 +1,5 @@
 defmodule AuctionWeb.ItemChannel do
-  use Phoenix.Channel
+  use AuctionWeb, :channel
 
   def join("item:" <> _item_id, _params, socket) do
     {:ok, socket}

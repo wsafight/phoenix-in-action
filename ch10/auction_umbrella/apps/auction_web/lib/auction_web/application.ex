@@ -5,9 +5,11 @@ defmodule AuctionWeb.Application do
 
   use Application
 
+  @impl true
   def start(_type, _args) do
-    # List all child processes to be supervised
     children = [
+      # Start the PubSub system
+      {Phoenix.PubSub, name: AuctionWeb.PubSub},
       # Start the endpoint when the application starts
       AuctionWeb.Endpoint
       # Starts a worker by calling: AuctionWeb.Worker.start_link(arg)
@@ -18,12 +20,5 @@ defmodule AuctionWeb.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: AuctionWeb.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
-  def config_change(changed, _new, removed) do
-    AuctionWeb.Endpoint.config_change(changed, removed)
-    :ok
   end
 end

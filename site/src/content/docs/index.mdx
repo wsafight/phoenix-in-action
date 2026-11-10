@@ -1,0 +1,59 @@
+---
+title: Auction：一个 Phoenix 应用的成长史
+description: 跟着 11 个可运行的代码快照，用 Phoenix 1.7 把一个拍卖应用从零养大
+template: splash
+hero:
+  tagline: 从一个不依赖框架的 .ex 文件，到一个有实时竞价和 JSON API 的拍卖系统——每一章的代码都能在仓库里跑起来。
+  image:
+    file: ../../assets/cover.png
+  actions:
+    - text: 从序章开始
+      link: chapters/preface/
+      icon: right-arrow
+      variant: primary
+    - text: 章节代码仓库
+      link: https://github.com/wsafight/phoenix-in-action
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## 关于这本书
+
+这本书只讲一件事：怎么用 Phoenix 1.7 把一个真实应用从零搭起来。不是 Hello World 教程，
+是一个**拍卖网站**——能列商品、出价、登录、实时推送新出价，还有一套给外部程序用的 JSON API。
+
+仓库里的每个章节目录是一个**可运行的代码快照**，不是"示例片段"：每章对应的 `chXX/` 目录
+都能 `mix phx.server` 起服务、`mix test` 全绿。讲法是先打开代码，再解释它为什么长这样。
+
+<CardGrid stagger>
+  <Card title="跟着代码学" icon="document">
+    每一章先讲概念，再落到仓库里对应的文件上——读完可以直接打开章节目录对照。
+  </Card>
+  <Card title="Umbrella 架构" icon="puzzle">
+    业务逻辑（auction）与 Web 层（auction_web）分离，context 模式贯穿始终。
+  </Card>
+  <Card title="现代化写法" icon="rocket">
+    heex、`<.form>`、`<.input>`、verified routes——全部按 Phoenix 1.7 的惯用法写。
+  </Card>
+  <Card title="实战路径" icon="approve-check">
+    FakeRepo → Ecto → 认证 → Channel 推送 → JSON API，一条完整的学习曲线。
+  </Card>
+</CardGrid>
+
+## 章节地图
+
+| 章节 | 主题 | 仓库目录 |
+| --- | --- | --- |
+| 1 | 第一个 Phoenix 应用：Blog 骨架 | `ch03/blog` |
+| 2 | 先写领域层：Item、FakeRepo、context | `ch04/auction.ex` |
+| 3 | 装进 umbrella：OTP 应用 | `ch05/auction_umbrella` |
+| 4 | auction_web：Endpoint、Router、heex | `ch06` |
+| 5 | 接真数据库：Ecto Repo | `ch07` |
+| 6 | changeset：可校验的写入 | `ch08` |
+| 7 | Items CRUD：表单、redirect、`_method` | `ch09` |
+| 8 | 用户和登录：pbkdf2、session、守门 plug | `ch10` |
+| 9 | 出价：关联、嵌套路由、preload | `ch11` |
+| 10 | Channel：实时推送新出价 | `ch12` |
+| 11 | JSON API | `ch13` |
+| 12 | 收尾：测试体系与全貌 | `ch14` |

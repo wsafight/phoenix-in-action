@@ -2,7 +2,6 @@ defmodule BlogWeb.API.PostController do
   use BlogWeb, :controller
 
   alias Blog.API
-  alias Blog.API.Post
 
   def index(conn, _params) do
     posts = API.list_posts()

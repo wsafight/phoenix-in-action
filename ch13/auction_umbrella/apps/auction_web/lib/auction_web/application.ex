@@ -5,9 +5,11 @@ defmodule AuctionWeb.Application do
 
   use Application
 
+  @impl true
   def start(_type, _args) do
-    # List all child processes to be supervised
     children = [
+      {DNSCluster, query: Application.get_env(:auction_web, :dns_cluster_query) || :ignore},
+      {Phoenix.PubSub, name: AuctionWeb.PubSub},
       # Start the endpoint when the application starts
       AuctionWeb.Endpoint
       # Starts a worker by calling: AuctionWeb.Worker.start_link(arg)
@@ -22,6 +24,7 @@ defmodule AuctionWeb.Application do
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
+  @impl true
   def config_change(changed, _new, removed) do
     AuctionWeb.Endpoint.config_change(changed, removed)
     :ok

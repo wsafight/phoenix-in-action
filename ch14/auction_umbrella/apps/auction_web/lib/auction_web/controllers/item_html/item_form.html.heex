@@ -1,0 +1,14 @@
+<.form :let={f} for={@item} action={@action}>
+  <div :if={@item.action} class="alert alert-danger">
+    Unfortunately, there are errors in your
+    submission. Please correct them below.
+  </div>
+
+  <.input field={f[:title]} type="text" label="Title" />
+  <.input field={f[:description]} type="textarea" label="Description" />
+  <.input field={f[:ends_at]} type="datetime-local" label="Auction ends at" />
+
+  <div>
+    <.button type="submit">Submit</.button>
+  </div>
+</.form>

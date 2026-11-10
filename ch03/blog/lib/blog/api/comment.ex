@@ -3,7 +3,6 @@ defmodule Blog.API.Comment do
   import Ecto.Changeset
   alias Blog.API.Comment
 
-
   schema "comments" do
     field :name, :string
     field :body, :string

@@ -2,7 +2,7 @@ defmodule AuctionTest do
   use ExUnit.Case
   doctest Auction
 
-  test "greets the world" do
-    assert Auction.hello() == :world
+  test "new_item/0 returns an empty changeset" do
+    assert %Ecto.Changeset{} = Auction.new_item()
   end
 end

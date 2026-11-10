@@ -7,6 +7,7 @@ defmodule BlogWeb.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :put_root_layout, html: {BlogWeb.Layouts, :root}
   end
 
   pipeline :api do
@@ -17,6 +18,7 @@ defmodule BlogWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+
     resources "/posts", PostController do
       resources "/comments", CommentController, only: [:create]
     end

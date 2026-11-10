@@ -5,13 +5,17 @@ defmodule AuctionWeb.Application do
 
   use Application
 
+  @impl true
   def start(_type, _args) do
-    # List all child processes to be supervised
     children = [
-      # Start the endpoint when the application starts
+      # DNS cluster for distributed Erlang in production releases
+      {DNSCluster, query: Application.get_env(:auction_web, :dns_cluster_query) || :ignore},
+      # Start the PubSub system
+      {Phoenix.PubSub, name: AuctionWeb.PubSub},
+      # Start the Endpoint (http/https)
       AuctionWeb.Endpoint
       # Starts a worker by calling: AuctionWeb.Worker.start_link(arg)
-      # {AuctionWeb.Worker, arg},
+      # {AuctionWeb.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -22,6 +26,7 @@ defmodule AuctionWeb.Application do
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
+  @impl true
   def config_change(changed, _new, removed) do
     AuctionWeb.Endpoint.config_change(changed, removed)
     :ok

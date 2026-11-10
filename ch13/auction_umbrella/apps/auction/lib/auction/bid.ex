@@ -3,9 +3,9 @@ defmodule Auction.Bid do
   import Ecto.Changeset
 
   schema "bids" do
-    field :amount, :integer
-    belongs_to :item, Auction.Item
-    belongs_to :user, Auction.User
+    field(:amount, :integer)
+    belongs_to(:item, Auction.Item)
+    belongs_to(:user, Auction.User)
     timestamps()
   end
 

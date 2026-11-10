@@ -1,0 +1,43 @@
+<h1>{@post.title}</h1>
+
+<div>
+  <p>{date(@post.inserted_at)}</p>
+  {text_to_html(@post.body)}
+</div>
+
+<hr />
+
+<h4>Comments</h4>
+<div>
+  <div :for={comment <- @post.comments}>
+    <em>{comment.name} says:</em>
+    {text_to_html(comment.body)}
+  </div>
+</div>
+
+<hr />
+
+<h5>Post a comment</h5>
+<.simple_form :let={f} for={@new_comment} action={~p"/posts/#{@post}/comments"}>
+  <div>
+    <label>
+      Name:<br />
+      <input type="text" name={f[:name].name} id={f[:name].id} value={f[:name].value} />
+    </label>
+  </div>
+  <div>
+    <label>
+      Comment:<br />
+      <textarea name={f[:body].name} id={f[:body].id}>{f[:body].value}</textarea>
+    </label>
+  </div>
+  <:actions>
+    <.button>Submit Comment</.button>
+  </:actions>
+</.simple_form>
+
+<hr />
+
+<div>
+  <span><.link href={~p"/posts"}>Back</.link></span>
+</div>

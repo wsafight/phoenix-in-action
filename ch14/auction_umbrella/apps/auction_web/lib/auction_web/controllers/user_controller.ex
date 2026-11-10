@@ -15,7 +15,7 @@ defmodule AuctionWeb.UserController do
 
   def create(conn, %{"user" => user_params}) do
     case Auction.insert_user(user_params) do
-      {:ok, user} -> redirect(conn, to: Routes.user_path(conn, :show, user))
+      {:ok, user} -> redirect(conn, to: ~p"/users/#{user}")
       {:error, user} -> render(conn, "new.html", user: user)
     end
   end
@@ -31,7 +31,7 @@ defmodule AuctionWeb.UserController do
     if current_user == nil || current_user.id != requested_user_id do
       conn
       |> put_flash(:error, "Nice try, friend. That's not a page for you.")
-      |> redirect(to: Routes.item_path(conn, :index))
+      |> redirect(to: ~p"/items")
       |> halt()
     else
       conn

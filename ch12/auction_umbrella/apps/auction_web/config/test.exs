@@ -2,10 +2,16 @@
 # should only configure the :auction_web application itself
 # and only for organization purposes. All other config goes to
 # the umbrella root.
-use Mix.Config
+import Config
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :auction_web, AuctionWeb.Endpoint,
-  http: [port: 4002],
+  http: [ip: {127, 0, 0, 1}, port: 4002],
   server: false
+
+# Print only warnings and errors during test
+config :logger, level: :warning
+
+# Reduce the number of hashing rounds during test
+config :pbkdf2_elixir, :rounds, 1

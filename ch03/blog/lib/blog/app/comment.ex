@@ -2,7 +2,6 @@ defmodule Blog.App.Comment do
   use Ecto.Schema
   import Ecto.Changeset
 
-
   schema "comments" do
     field :body, :string
     field :name, :string

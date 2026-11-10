@@ -3,7 +3,6 @@ defmodule Blog.API.Post do
   import Ecto.Changeset
   alias Blog.API.Post
 
-
   schema "posts" do
     field :title, :string
     field :body, :string

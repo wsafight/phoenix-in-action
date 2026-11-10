@@ -17,7 +17,7 @@ defmodule AuctionTest do
     end
 
     test "returns all Items in the database", %{items: items} do
-      assert items == Auction.list_items
+      assert items == Auction.list_items()
     end
   end
 
@@ -36,7 +36,7 @@ defmodule AuctionTest do
 
   describe "insert_item/1" do
     test "adds an Item to the database" do
-      count_query = from i in Item, select: count(i.id)
+      count_query = from(i in Item, select: count(i.id))
       before_count = Repo.one(count_query)
       {:ok, _item} = Auction.insert_item(%{title: "test item"})
       assert Repo.one(count_query) == before_count + 1
