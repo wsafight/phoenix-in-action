@@ -1,0 +1,34 @@
+<h1>{@item.title}</h1>
+
+<ul>
+  <li><strong>Description:</strong> {@item.description}</li>
+  <li><strong>Auction ends at:</strong> {@item.ends_at}</li>
+</ul>
+
+<div style="display: flex; flex-direction: row;">
+  <div style="flex: 1">
+    <h2>Current bids</h2>
+    <div id="bids">
+      <AuctionWeb.BidHTML.bid :for={bid <- @item.bids} bid={bid} />
+    </div>
+  </div>
+
+  <div style="flex: 1">
+    <div :if={assigns[:current_user]}>
+      <h2>Place your bid!</h2>
+
+      <.form :let={f} for={@bid} action={~p"/items/#{@item}/bids"}>
+        <div :if={@bid.action} class="alert alert-danger">
+          Unfortunately, there are errors in your
+          submission. Please correct them below.
+        </div>
+
+        <div class="form-group">
+          <.input field={f[:amount]} type="number" label="Bid amount" class="form-control" />
+        </div>
+
+        <.button type="submit" class="btn btn-primary">Submit</.button>
+      </.form>
+    </div>
+  </div>
+</div>

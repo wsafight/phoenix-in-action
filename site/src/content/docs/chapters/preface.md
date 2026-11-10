@@ -1,6 +1,6 @@
 ---
 title: 序章 · 这本书要构建什么
-description: 从一个内存里的假仓库，到一个有实时竞价和 JSON API 的拍卖系统——跟着 11 个代码快照，把一个 Phoenix 应用从零养大
+description: 从一个内存里的假仓库，到一个有实时竞价、LiveView 页面和 JSON API 的拍卖系统——跟着 13 个代码快照，把一个 Phoenix 应用从零养大
 sidebar:
   order: 0
 ---
@@ -15,14 +15,15 @@ sidebar:
 
 ## 跟着代码走，不跟书走
 
-仓库里每个章节目录是一个**可运行的代码快照**，不是"示例片段"：`ch04/auction.ex` 能直接 `iex` 加载，`ch07/auction_umbrella` 能 `mix phx.server` 起服务，`ch14/auction_umbrella` 的 `mix test` 全绿。每一章的讲法都是：**先打开代码，再解释它为什么长这样**。
+仓库里每个章节目录是一个**可运行的代码快照**，不是"示例片段"：`ch04/auction.ex` 能直接 `iex` 加载，`ch07/auction_umbrella` 能 `mix phx.server` 起服务，`ch15/auction_umbrella` 的 `mix test` 全绿。每一章的讲法都是：**先打开代码，再解释它为什么长这样**。
 
 顺序按应用的"成长"排，不按技术主题排：
 
 1. 先用一个 `mix phx.new` 生成的 Blog 看懂 Phoenix 应用的骨架长什么样（第 1 章）；
-2. 再换到拍卖项目，把领域核心先写成三个不依赖框架的普通模块（第 2 章），然后才装进 umbrella、接 Web、接数据库（第 3–5 章）；
-3. 之后每一章补一块真实需求：写入校验、CRUD 页面、用户认证、出价、实时推送、JSON API（第 6–11 章）；
-4. 收尾章回到全景：测试体系、目录结构、整条请求链路（第 12 章）。
+2. 再换到拍卖项目，把领域核心先写成三个不依赖框架的普通模块（第 2 章），然后才装进 umbrella、接 Web、接数据库（第 3–6 章）；
+3. 之后每一章补一块真实需求：写入校验、CRUD 页面、用户认证、出价、实时推送、JSON API（第 7–13 章）；
+4. 再往后是 Phoenix 1.7 的主战场：API 写接口、LiveView 详情页、GenServer 出价缓存（第 14–16 章）；
+5. 收尾两章回到全景：目录结构、整条请求链路、测试体系（第 17–18 章）。
 
 这个顺序是故意的。直接上 Phoenix 容易学成"路由怎么写、模板怎么写"，先写没有框架的领域层能让你看清一件事：**Phoenix 只是给 context 包了一层壳，应用的本体从来不在 Web 层**。
 
@@ -35,7 +36,7 @@ sidebar:
 ## 跑起来需要什么
 
 - Elixir 1.14+、Erlang/OTP 25+（本仓库在 Elixir 1.20 / OTP 29 上验过）；
-- PostgreSQL 跑在本地 5432，账号 `postgres`/`postgres`（第 5 章起用得到；前几章不需要数据库）；
+- PostgreSQL 跑在本地 5432，账号 `postgres`/`postgres`（第 6 章起用得到；前几章不需要数据库）；
 - 一个能开 `http://localhost:4000` 的浏览器。
 
 每章末尾都有"动手验证"：命令能复制就跑，预期输出是实测过的，不是猜的。

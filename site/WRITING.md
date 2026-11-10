@@ -1,6 +1,7 @@
 # 章节写作规范
 
-本目录 `src/content/docs/chapters/` 下每章一个 `.md` 文件，文件名即 slug。
+本目录 `src/content/docs/chapters/` 下每章一个 `.md` 文件，文件名即 slug
+（`NN-slug` 命名，`NN` 为章节序号）。
 
 ## 文件格式
 
@@ -29,14 +30,21 @@ sidebar:
 
 | 站点文件 | 仓库代码 | 主题 |
 | --- | --- | --- |
-| ch03.md | ch03/blog | 第一个 Phoenix 应用：生成器、MVC、Post/Comment |
-| ch04-05.md | ch04 + ch05 | Umbrella 项目、auction 上下文、FakeRepo |
-| ch06.md | ch06 | auction_web：Endpoint、Router、Controller、模板渲染 |
-| ch07.md | ch07 | 接入 Ecto Repo、Item schema、迁移 |
-| ch08.md | ch08 | Ecto changeset、校验、list/get/insert |
-| ch09.md | ch09 | Items CRUD：form、heex 模板、redirect |
-| ch10.md | ch10 | 用户注册、Pbkdf2 密码哈希、登录 Session、plug 认证 |
-| ch11.md | ch11 | Bid 出价：belongs_to 关联、嵌套表单、校验金额 |
-| ch12.md | ch12 | Phoenix Channel：ItemChannel、广播 new_bid、前端 socket.js |
-| ch13.md | ch13 | JSON API：Api.ItemController、render json、视图 |
-| ch14.md | ch14 | 收尾：测试、API 完善、项目结构回顾 |
+| 01-blog-skeleton.md | ch03/blog | Blog 骨架：生成器、Endpoint/Router/模板 |
+| 02-domain-core.md | ch04 | 无框架领域层：Auction、Item、FakeRepo |
+| 03-umbrella.md | ch05 | umbrella 化：apps/ 拆分、application.ex |
+| 04-request-pipeline.md | ch06 | 请求管道：Endpoint plug 链、Router、pipeline |
+| 05-render-pipeline.md | ch06 | 渲染管线：*_html + embed_templates、Layouts、Plug.Static |
+| 06-ecto-repo.md | ch07 | Ecto Repo、Item schema、迁移 |
+| 07-changeset.md | ch08 | changeset、校验、insert/update |
+| 08-crud.md | ch09 | Items CRUD：form、heex、redirect、_method |
+| 09-users.md | ch10 | 用户注册：users 表、Pbkdf2、changeset_with_password |
+| 10-login.md | ch10 | 登录与守门：session、Authenticator、函数 plug |
+| 11-bids.md | ch11 | 出价：belongs_to、嵌套路由、preload |
+| 12-channel.md | ch12 | Channel：ItemChannel、广播 new_bid、app.js |
+| 13-json-api.md | ch13 | JSON API：/api scope、*_json 渲染模块 |
+| 14-api-write.md | ch14 | API 写接口：Api.Authenticate、POST items/bids、ChangesetJSON |
+| 15-liveview.md | ch15 | LiveView：ItemLive.Show、live_session、handle_info |
+| 16-otp-cache.md | ch15 | OTP：BidCache GenServer、cache-aside、let it crash |
+| 17-architecture.md | ch15 | 项目全貌：目录树、应用边界、链路总览 |
+| 18-testing.md | ch14 | 测试体系：ConnCase/ChannelCase、Sandbox、mix test |

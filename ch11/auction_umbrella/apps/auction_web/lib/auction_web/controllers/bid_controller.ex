@@ -11,7 +11,7 @@ defmodule AuctionWeb.BidController do
         redirect(conn, to: ~p"/items/#{bid.item_id}")
 
       {:error, bid} ->
-        item = Auction.get_item_with_bids(item_id)
+        item = Auction.get_item(item_id)
 
         conn
         |> put_view(html: AuctionWeb.ItemHTML)

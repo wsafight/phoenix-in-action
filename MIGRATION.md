@@ -27,10 +27,15 @@ test: ["ecto.create --quiet", "ecto.migrate", "test"]
 ## 配置文件
 
 - `use Mix.Config` → `import Config`；`config/prod.secret.exs` → `config/runtime.exs`
-- **Umbrella 必须注意**：Elixir 1.20 中 `import_config "../apps/*/config/config.exs"`
-  的通配符 glob 已失效（直接 File.Error，连 `mix deps.get` 都跑不了）。
-  把 `apps/*/config/*.exs` 全部合并到 umbrella 根的 `config/`（config/dev/prod/test/runtime.exs），
-  删掉各 app 自己的 config 目录——这正是 1.7 生成器的结构
+- **Umbrella 必须注意**：`import_config` 不接受通配符路径，
+  `import_config "../apps/*/config/config.exs"` 会直接抛 `File.Error`，
+  连 `mix deps.get` 都跑不了。两种修法任选其一：
+  a) 把 `apps/*/config/*.exs` 全部合并到 umbrella 根的 `config/`
+  （config/dev/prod/test/runtime.exs），删掉各 app 自己的 config 目录——
+  这正是 1.7 生成器的结构；
+  b) 保留各 app 的 config，但在根 config 里用 `Path.wildcard` 显式展开：
+  `for config <- "../apps/*/config/config.exs" |> Path.expand(__DIR__) |> Path.wildcard(), do: import_config config`
+  （本仓库采用此方案，保留各应用独立的 dev/test 配置）
 - Endpoint 中删除 `pubsub:` 选项；在 `application.ex` children 中加
   `{Phoenix.PubSub, name: AuctionWeb.PubSub}`（或对应 OTP app 名 + `.PubSub`）
 - `dev.exs`：删除 webpack/node watchers

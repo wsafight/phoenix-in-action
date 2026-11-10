@@ -24,7 +24,7 @@ defmodule AuctionUmbrella.MixProject do
   defp aliases do
     [
       setup: ["deps.get", "ecto.setup"],
-      "ecto.setup": ["ecto.create", "ecto.migrate"],
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run apps/auction/priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]

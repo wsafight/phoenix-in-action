@@ -1,5 +1,5 @@
 ---
-title: 第2章 · 先写领域层：Item、FakeRepo 和 context
+title: 第2章 · 领域层
 description: 暂离 Phoenix，把拍卖应用的领域核心写成一个普通 .ex 文件：Item struct 钉死数据形状，FakeRepo 伪造存储层，context 用 @repo 解耦。
 sidebar:
   order: 2
@@ -67,7 +67,7 @@ iex(3)> %Auction.Item{title: "x", ends_at: ~N[2030-01-01 00:00:00]}
 
 想让某字段必填，可以在 `defstruct` 前面加一行 `@enforce_keys [:title]`，构造时缺了就直接报错。这章的数据全由 FakeRepo 写死，用不上这个约束。
 
-同时也得说清 struct 不管什么。`%Auction.Item{id: "abc"}` 能构造出来，`defstruct` 不查类型也不查必填，它只管键名白名单。值是否合法（标题是不是字符串、`ends_at` 是不是时间、哪些字段非空）是另一层的事：第 6 章引入 changeset 后才有校验。shape 和 content 是两种约束，`defstruct` 只覆盖前一种。
+同时也得说清 struct 不管什么。`%Auction.Item{id: "abc"}` 能构造出来，`defstruct` 不查类型也不查必填，它只管键名白名单。值是否合法（标题是不是字符串、`ends_at` 是不是时间、哪些字段非空）是另一层的事：第 7 章引入 changeset 后才有校验。shape 和 content 是两种约束，`defstruct` 只覆盖前一种。
 
 `ends_at` 存的是 `NaiveDateTime`，源码里用 `~N` sigil 写字面量，比如 `~N[2020-01-01 00:00:00]`。"Naive"的意思是不带时区信息，就是"某年某月某日某时"这几个数字本身。带时区的 `DateTime` 等到需要跨时区展示时再引入。三条种子数据的 `ends_at` 都在 2018–2020 年之间，在当年写这段代码时是"未来截止"的拍品；现在看都过期了，但读接口并不关心过期与否，按时间过滤是以后 `where` 子句的事。
 
@@ -172,15 +172,15 @@ end
 
 - **条件之间是与关系**。`%{id: 1, description: "wrong"}` 要求两个字段同时匹配，一个不符就落空。`Enum.all?` 就是这个"与"的机械实现。
 - **空 map 命中第一条**。`get_item_by(%{})` 时 `Map.keys` 返回空列表，`Enum.all?([], ...)` 恒真，第一个 item 直接入选。Ecto 的 `Repo.get_by(Schema, [])` 也是这个行为。
-- **attrs 必须是 map**。`Map.keys` 不接收关键字列表，`get_item_by(title: "x")` 会抛 `BadMapError`，得写成 `%{title: "x"}`。这算 FakeRepo 和真 Repo 的一个分歧点：Ecto 那边关键字列表是合法的。写顺手容易漏掉 `%{...}` 这层壳，记住就行：keyword list 是"键值对的列表"，map 才是"键到值的映射"，`Map.keys` 要的是后者。
+- **attrs 必须是 map**。`Map.keys` 不接收关键字列表，`get_item_by(title: "x")` 会抛 `BadMapError`，得写成 `%{title: "x"}`。这算 FakeRepo 和真 Repo 的一个分歧点：Ecto 那边关键字列表是合法的。写顺手容易漏掉 `%{...}` 这层壳：keyword list 是"键值对的列表"，map 才是"键到值的映射"，`Map.keys` 要的是后者。
 
 还有一个更隐蔽的坑：`Map.get(item, key)` 对 struct 里不存在的键返回 `nil`，所以 `get_item_by(%{nonsense: nil})` 会命中第一条记录，`nil === nil` 为真。同理 `%{__struct__: Auction.Item}` 会匹配每一条，因为 `__struct__` 是真的存在的键。真 Ecto 在编译期就按 schema 字段校验查询，这种 attrs 根本进不了 SQL。FakeRepo 没有这层把关，写 attrs 时只能靠自己别乱敲。
 
 :::note[这个 get! 并不真"!"]
-Elixir 命名惯例里 `!` 表示"找不到就抛异常"，比如 `Repo.get!/2` 查无此行会 raise `Ecto.NoResultsError`。`FakeRepo.get!` 只是借了函数名对齐接口形状，内部 `Enum.find` 找不到照样返回 `nil`，不会抛。这个差异现在无害，等第 5 章换 `Auction.Repo` 时 `get!` 会恢复成真正会抛的版本，调用方 `get_item/1` 的行为也会从"返回 `nil`"变成"抛异常"。
+Elixir 命名惯例里 `!` 表示"找不到就抛异常"，比如 `Repo.get!/2` 查无此行会 raise `Ecto.NoResultsError`。`FakeRepo.get!` 只是借了函数名对齐接口形状，内部 `Enum.find` 找不到照样返回 `nil`，不会抛。这个差异现在无害，等第 6 章换 `Auction.Repo` 时 `get!` 会恢复成真正会抛的版本，调用方 `get_item/1` 的行为也会从"返回 `nil`"变成"抛异常"。
 :::
 
-FakeRepo 缺什么也很说明问题：没有 `insert`、`update`、`delete`。`@items` 是编译期常量，写操作对它没有意义，硬要写就得把数据搬进 Agent 或 ETS，为了一个 fake 不值得。它顶住的边界是：能读，不能写；能验证接口形状，不能验证持久化。写操作要等第 5 章 `Ecto.Repo` 进场才有真正的落点。
+FakeRepo 缺什么也很说明问题：没有 `insert`、`update`、`delete`。`@items` 是编译期常量，写操作对它没有意义，硬要写就得把数据搬进 Agent 或 ETS，为了一个 fake 不值得。它顶住的边界是：能读，不能写；能验证接口形状，不能验证持久化。写操作要等第 6 章 `Ecto.Repo` 进场才有真正的落点。
 
 ## Auction：context 用 @repo 换实现自由
 
@@ -224,7 +224,7 @@ end
 
 `get_item_by(attrs)` 的参数 `attrs` 没写类型约束，签名上收任何值。约束其实藏在 FakeRepo 那层：`Map.keys` 只收 map，关键字列表走到那里才抛 `BadMapError`。这种"上游签名松、下游自然报错"的写法在这份代码里没问题，因为出错位置和出错原因对得上；将来 Ecto 接手后，attrs 的形状约束还是由 repo 层（`Repo.get_by` 的参数校验）兜着。
 
-`@repo` 是编译期替换，不是运行时可配置的依赖注入，改个环境变量换 repo 那一套在这里不存在。想要可配置也有现成路子，`Application.compile_env` 就能从配置读模块名；对一个马上要被一行替换掉的属性，没必要。它的价值在源代码层：整份文件里只有 `@repo FakeRepo` 这一处写着具体实现，三个公共函数对实现完全无感。第 5 章把这行改成 `@repo Repo`，`list_items`/`get_item`/`get_item_by` 一个字不动，行为就从读内存列表变成查 PostgreSQL。
+`@repo` 是编译期替换，不是运行时可配置的依赖注入，改个环境变量换 repo 那一套在这里不存在。想要可配置也有现成路子，`Application.compile_env` 就能从配置读模块名；对一个马上要被一行替换掉的属性，没必要。它的价值在源代码层：整份文件里只有 `@repo FakeRepo` 这一处写着具体实现，三个公共函数对实现完全无感。第 6 章把这行改成 `@repo Repo`，`list_items`/`get_item`/`get_item_by` 一个字不动，行为就从读内存列表变成查 PostgreSQL。
 
 假仓库的接口形状照抄 `Repo.all`/`Repo.get!`/`Repo.get_by`，就是为这一刻准备的：调用方写法和将来换真库时一模一样，差别只有 `@repo` 指向谁。
 
@@ -255,7 +255,7 @@ context 这个名字来自 Phoenix 的约定：应用对外暴露的一组相关
 
 把缺口列出来，等于把后面几章的目录列出来：
 
-- **没有写路径**。`insert_item`、`update_item` 还不存在，因为内存常量没法写。第 5 章接 Ecto 之后才有 `Repo.insert` 的落点，写入还会带上 changeset 校验（第 6 章）。
+- **没有写路径**。`insert_item`、`update_item` 还不存在，因为内存常量没法写。第 6 章接 Ecto 之后才有 `Repo.insert` 的落点，写入还会带上 changeset 校验（第 7 章）。
 - **没有校验**。`%Item{title: nil}` 能构造，`Auction` 层不做任何检查。同样得等 changeset。
 - **没有进程**。没有 Application、没有监督树，`@items` 是数据不是状态机。第 3 章补上 OTP 外壳。
 - **没有测试**。没有 `test/` 目录和 ExUnit 用例，验证全靠手动调 iex。第 3 章变成 mix 项目后才有 `mix test` 的落点，测试体系到收尾章统一盘。
@@ -320,7 +320,7 @@ iex(5)> Auction.get_item("2")
 nil
 ```
 
-`99` 查无此物返回 `nil`，`"2"` 也是 `nil`：字符串和整型在 `===` 下不等。这里没有异常，记住这个行为和 `!` 的命名惯例不符，前面那个 note 说的就是它。
+`99` 查无此物返回 `nil`，`"2"` 也是 `nil`：字符串和整型在 `===` 下不等。这里没有异常，这个行为和 `!` 的命名惯例不符，前面那个 note 说的就是它。
 
 ```elixir
 iex(6)> Auction.get_item_by(%{title: "U2 - Achtung Baby on CD"})
@@ -399,4 +399,4 @@ Auction.Item                 数据形状：id / title / description / ends_at
 
 `@repo` 一行是整章的支点：context 只写接口，实现可以换。`defstruct` 钉死了数据的形状，`FakeRepo` 照 `Ecto.Repo` 的读侧形状模仿接口、写侧留白。先立边界再填实现，让领域层在没有数据库、没有 Web 框架的前提下跑通了全部读路径。
 
-这个形态也到头了：没有项目结构，就没有依赖声明、测试目录和启动入口。下一章用 `mix new --umbrella` 建一个 umbrella 项目，在 `apps/` 下生成 `auction` 应用，把这三个模块拆成 `item.ex`、`fake_repo.ex`、`auction.ex` 三个文件搬进去，`Auction` 变成带 `Application` 回调和监督树的 OTP 应用。为第 4 章在它旁边加 `auction_web`、第 5 章把 `@repo` 指向 `Auction.Repo` 腾好位置。
+这个形态也到头了：没有项目结构，就没有依赖声明、测试目录和启动入口。下一章用 `mix new --umbrella` 建一个 umbrella 项目，在 `apps/` 下生成 `auction` 应用，把这三个模块拆成 `item.ex`、`fake_repo.ex`、`auction.ex` 三个文件搬进去，`Auction` 变成带 `Application` 回调和监督树的 OTP 应用。为第 4 章在它旁边加 `auction_web`、第 6 章把 `@repo` 指向 `Auction.Repo` 腾好位置。

@@ -21,8 +21,10 @@ defmodule AuctionUmbrella.MixProject do
 
   defp aliases do
     [
-      # run `mix setup` in each child app
-      setup: ["cmd mix setup"]
+      setup: ["deps.get", "ecto.setup"],
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run apps/auction/priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end

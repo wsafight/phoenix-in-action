@@ -1,5 +1,5 @@
 ---
-title: 第1章 · 第一个 Phoenix 应用：Blog
+title: 第1章 · Blog 骨架
 description: 拆开一个 mix phx.new 生成的博客应用，看懂 Endpoint、Router、Controller、Context、模板各自管什么，再用嵌套 resources 和 JSON 渲染器给它加上评论和 API。
 sidebar:
   order: 1

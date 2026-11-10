@@ -10,7 +10,7 @@ export default defineConfig({
     starlight({
       title: 'Auction：一个 Phoenix 应用的成长史',
       description:
-        '跟着 11 个可运行的代码快照，用 Phoenix 1.7 把一个拍卖应用从零养大：领域层 → umbrella → Web → Ecto → CRUD → 认证 → 出价 → Channel → JSON API。',
+        '跟着 13 个可运行的代码快照，用 Phoenix 1.7 把一个拍卖应用从零养大：领域层 → umbrella → Web → Ecto → CRUD → 认证 → 出价 → Channel → JSON API → LiveView → OTP。',
       defaultLocale: 'root',
       locales: {
         root: { label: '简体中文', lang: 'zh-CN' },

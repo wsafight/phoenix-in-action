@@ -1,5 +1,5 @@
 ---
-title: 第3章 · 装进 umbrella：把领域代码变成 OTP 应用
+title: 第3章 · umbrella
 description: "用 mix new --umbrella 把上一章的单文件拍卖代码改造成 umbrella 项目下的 auction OTP 应用，理清共享路径、mod 启动回调和 in_umbrella 依赖机制"
 sidebar:
   order: 3
@@ -9,7 +9,7 @@ sidebar:
 
 "OTP 应用"这个词值得先钉住：它不是"一堆代码"的意思，而是 OTP 的部署和生命周期单元。VM 里的每个应用有名字、有版本、有模块清单、有一棵以顶层 supervisor 为根的进程树，能单独启动、单独停止。`mix new` 出来的是源码仓库，编译后 `ebin/` 里的 `.app` 文件才是应用的身份证。
 
-要拆清楚的东西：umbrella 的项目形态（根 `mix.exs` 只有 `apps_path`，子应用共享 `_build`、`deps`、`config`、`mix.lock`）；`mod: {Auction.Application, []}` 声明的启动回调，以及为什么它的 children 是空列表；deps 里已经写好但还没接线的 `ecto_sql`/`postgrex`；`in_umbrella` 依赖机制。数据层仍由 `FakeRepo` 顶着，接真数据库是第 5 章的事。
+要拆清楚的东西：umbrella 的项目形态（根 `mix.exs` 只有 `apps_path`，子应用共享 `_build`、`deps`、`config`、`mix.lock`）；`mod: {Auction.Application, []}` 声明的启动回调，以及为什么它的 children 是空列表；deps 里已经写好但还没接线的 `ecto_sql`/`postgrex`；`in_umbrella` 依赖机制。数据层仍由 `FakeRepo` 顶着，接真数据库是第 6 章的事。
 
 ## `mix new --umbrella`：根目录不装代码，只装约定
 
@@ -168,13 +168,13 @@ end
 
 `ch05/auction_umbrella/apps/auction/lib/auction/application.ex`
 
-`children` 是空列表，这不是忘了填，是确实没有进程可填。看 `start/2` 的职责就知道什么时候会有东西进来：监督树托管的是应用运行期间必须活着的进程，比如连接池、缓存、HTTP 服务器、定时任务。判据只有一条：它是个进程吗，挂了需不需要被拉起来？第 5 章的 `Auction.Repo`（Ecto 连接池进程）会是这个列表里的第一个真 child，第 4 章 `auction_web` 的 Endpoint 是隔壁应用里的同类角色。
+`children` 是空列表，这不是忘了填，是确实没有进程可填。看 `start/2` 的职责就知道什么时候会有东西进来：监督树托管的是应用运行期间必须活着的进程，比如连接池、缓存、HTTP 服务器、定时任务。判据只有一条：它是个进程吗，挂了需不需要被拉起来？第 6 章的 `Auction.Repo`（Ecto 连接池进程）会是这个列表里的第一个真 child，第 4 章 `auction_web` 的 Endpoint 是隔壁应用里的同类角色。
 
 两个 supervisor 选项也顺手看一眼。`strategy: :one_for_one` 表示某个子进程崩溃时只重启它自己，兄弟进程不受影响；`name: Auction.Supervisor` 把 supervisor 注册成本地名字，之后才能用 `Supervisor.which_children(Auction.Supervisor)` 直接点名查看它。
 
 `use Application` 本身只是把这个模块标记为 Application 回调模块，并注入 `start/2`、`stop/1` 的默认实现供覆写；`stop/1` 在应用停掉时被调，通常用不上默认实现。如果 `application/0` 里不写 `mod:`，编译出来的是一个纯库应用：代码能被别人依赖，但启动时不跑任何进程。`deps/` 里的 `decimal` 就是这种形态。
 
-换句话说，"是不是 OTP 应用"和"有没有跑进程"是两回事：`decimal` 是应用但没进程，`FakeRepo` 是模块连应用都不是，而 `auction` 两者都是。`mod:` 就是这三类形态的分水岭。
+"是不是 OTP 应用"和"有没有跑进程"是两回事：`decimal` 是应用但没进程，`FakeRepo` 是模块连应用都不是，而 `auction` 两者都是。`mod:` 就是这三类形态的分水岭。
 
 ## 领域代码原样搬进来，`@repo` 留出接缝
 
@@ -204,7 +204,7 @@ end
 
 变化只有组织方式：原来三个模块挤在一个文件里，现在一文件一模块，目录映射命名空间，`Auction.X` 就住 `lib/auction/x.ex`。`Auction.Item` 仍是个普通 struct，`defstruct [:id, :title, :description, :ends_at]`（`ch05/auction_umbrella/apps/auction/lib/auction/item.ex`），没有 schema、没有表，纯数据容器。单文件时代挤在一起只是因为当时只有三个模块，按文件拆开后每个模块才有自己的演化空间。
 
-`@repo` 这个模块属性是刻意留的接缝。三个公开函数都不直接点名 `FakeRepo`，第 5 章把它换成 `Repo` 只动这一行，调用方无感。context 模块面向"一个能 `all/get!/get_by` 的仓库"编程，不关心背后是常量列表还是 PostgreSQL。
+`@repo` 这个模块属性是刻意留的接缝。三个公开函数都不直接点名 `FakeRepo`，第 6 章把它换成 `Repo` 只动这一行，调用方无感。context 模块面向"一个能 `all/get!/get_by` 的仓库"编程，不关心背后是常量列表还是 PostgreSQL。
 
 ## `FakeRepo` 是纯函数模块，所以监督树里没有它
 
@@ -279,7 +279,7 @@ end
 
 本章一行数据库代码都没有，但 `ecto_sql` 和 `postgrex` 已经躺在 deps 里。两个版本约束各说一句话：`~> 3.10` 表示 `>= 3.10.0 and < 4.0.0`，锁死主版本放开次版本；`postgrex` 的 `>= 0.0.0` 等于不约束，实际版本交给 `ecto_sql` 自己的 `postgrex` 要求去决定。`mix deps.get` 会把它们连同间接依赖一起拉回根 `deps/` 编译：`ecto`、`db_connection`、`decimal`、`telemetry`，打开 `mix.lock` 能看到七个包的完整解析记录。启动应用时这一串也都作为依赖应用先跑起来，尽管还没有任何代码调用它们。
 
-提前放进来是在声明归属，不是浪费：数据库依赖属于领域应用 `auction`，不属于将来的 Web 层。第 4 章 `auction_web` 进来时，它的 deps 里只会出现 `phoenix`、`bandit` 这些 HTTP 相关的包，对 `ecto_sql` 一行不提；第 5 章 `Auction.Repo` 定义时，依赖也已经就位，只需写 `use Ecto.Repo` 和配置。依赖边界从第一天就是对的，后面不用重画。
+提前放进来是在声明归属，不是浪费：数据库依赖属于领域应用 `auction`，不属于将来的 Web 层。第 4 章 `auction_web` 进来时，它的 deps 里只会出现 `phoenix`、`bandit` 这些 HTTP 相关的包，对 `ecto_sql` 一行不提；第 6 章 `Auction.Repo` 定义时，依赖也已经就位，只需写 `use Ecto.Repo` 和配置。依赖边界从第一天就是对的，后面不用重画。
 
 ## `in_umbrella`：子应用之间的依赖通道
 
@@ -314,7 +314,7 @@ import_config "../apps/auction/config/config.exs"
 
 机制串起来是这样的：每个子应用的 `config_path` 都指向根这份文件，所以不管从哪个应用触发，读到的都是它；根文件再反过来用 `import_config` 载入每个应用自己的 `config/config.exs`。效果等于"各写各的配置，集中生效"：`auction` 想配置自己，写 `apps/auction/config/config.exs`，通过根文件被递归载入。现在那份子配置全是注释模板（`ch05/auction_umbrella/apps/auction/config/config.exs`），没有任何实际配置，但注释里已经埋了按环境分文件的钩子：解开 `import_config "#{Mix.env()}.exs"` 那行就能分 `dev.exs`/`test.exs`，后面章节给 `Repo` 配数据库连接用的就是这个机制。
 
-注意这里是显式列文件，不是通配。每加一个子应用，根文件就添一行 `import_config`；仓库后面的快照里能看到它长成两行：`auction` 一行、`auction_web` 一行。用显式列表而不是 `apps/*/config/config.exs` 通配，是为了让加载顺序一目了然，行序就是生效顺序，后 import 的覆盖先 import 的。
+这里是显式列文件，不是通配。每加一个子应用，根文件就添一行 `import_config`；仓库后面的快照里能看到它长成两行：`auction` 一行、`auction_web` 一行。用显式列表而不是 `apps/*/config/config.exs` 通配，是为了让加载顺序一目了然，行序就是生效顺序，后 import 的覆盖先 import 的。
 
 ## 测试住在各自的应用里，根 `mix test` 逐个执行
 

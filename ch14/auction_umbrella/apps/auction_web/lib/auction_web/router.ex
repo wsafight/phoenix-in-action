@@ -12,6 +12,8 @@ defmodule AuctionWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug AuctionWeb.Authenticator
   end
 
   scope "/", AuctionWeb do
@@ -42,6 +44,8 @@ defmodule AuctionWeb.Router do
   scope "/api", AuctionWeb.Api do
     pipe_through :api
 
-    resources "/items", ItemController, only: [:index, :show]
+    resources "/items", ItemController, only: [:index, :show, :create] do
+      resources "/bids", BidController, only: [:create]
+    end
   end
 end

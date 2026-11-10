@@ -30,8 +30,10 @@ defmodule AuctionUmbrella.MixProject do
   # and cannot be accessed from applications inside the apps/ folder.
   defp aliases do
     [
-      # run `mix setup` in any child app to set this up
-      setup: ["cmd mix setup"]
+      setup: ["deps.get", "ecto.setup"],
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run apps/auction/priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end
